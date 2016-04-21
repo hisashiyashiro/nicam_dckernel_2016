@@ -1,0 +1,7 @@
+ifeq ($(origin NICAM_BINDIR), undefined)
+	NICAM_BINDIR = $(TOPDIR)/bin
+endif
+
+ifeq ($(origin NICAM_LIBDIR), undefined)
+	NICAM_LIBDIR = $(TOPDIR)/lib
+endif
