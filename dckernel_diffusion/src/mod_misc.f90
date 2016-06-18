@@ -21,6 +21,14 @@ module mod_misc
   public :: DEBUG_rapstart
   public :: DEBUG_rapend
   public :: DEBUG_rapreport
+  public :: DEBUG_valuecheck
+
+  interface DEBUG_valuecheck
+     module procedure DEBUG_valuecheck_1D
+     module procedure DEBUG_valuecheck_2D
+     module procedure DEBUG_valuecheck_3D
+     module procedure DEBUG_valuecheck_4D
+  end interface DEBUG_valuecheck
 
   public :: MISC_make_idstr        !--- make file name with a number
   public :: MISC_get_available_fid !--- get an available file ID
@@ -65,22 +73,6 @@ module mod_misc
   integer,                 private            :: DEBUG_rapnend(DEBUG_rapnlimit)
 
 #ifdef _FIXEDINDEX_
-  real(DP), public              :: GRD_x    (ADM_gall   ,ADM_KNONE,ADM_lall   ,              ADM_nxyz)
-  real(DP), public              :: GRD_x_pl (ADM_gall_pl,ADM_KNONE,ADM_lall_pl,              ADM_nxyz)
-  real(DP), public              :: GRD_xt   (ADM_gall   ,ADM_KNONE,ADM_lall   ,ADM_TI:ADM_TJ,ADM_nxyz)
-  real(DP), public              :: GRD_xt_pl(ADM_gall_pl,ADM_KNONE,ADM_lall_pl,              ADM_nxyz)
-  real(DP), public              :: GRD_xr   (ADM_gall   ,ADM_KNONE,ADM_lall   ,ADM_AI:ADM_AJ,ADM_nxyz)
-  real(DP), public              :: GRD_xr_pl(ADM_gall_pl,ADM_KNONE,ADM_lall_pl,              ADM_nxyz)
-#else
-  real(DP), public, allocatable :: GRD_x    (:,:,:,:)
-  real(DP), public, allocatable :: GRD_x_pl (:,:,:,:)
-  real(DP), public, allocatable :: GRD_xt   (:,:,:,:,:)
-  real(DP), public, allocatable :: GRD_xt_pl(:,:,:,:)
-  real(DP), public, allocatable :: GRD_xr   (:,:,:,:,:)
-  real(DP), public, allocatable :: GRD_xr_pl(:,:,:,:)
-#endif
-
-#ifdef _FIXEDINDEX_
   real(DP), public              :: GRD_gz   (ADM_kall)
   real(DP), public              :: GRD_gzh  (ADM_kall)
   real(DP), public              :: GRD_dgz  (ADM_kall)
@@ -104,36 +96,6 @@ module mod_misc
   real(DP), public, allocatable :: GRD_bfac (:) !    A(k-1/2) = ( afac(k) A(k) + bfac(k) * A(k-1) ) / 2
   real(DP), public, allocatable :: GRD_cfac (:) ! From the cell wall value to the cell center value
   real(DP), public, allocatable :: GRD_dfac (:) !    A(k) = ( cfac(k) A(k+1/2) + dfac(k) * A(k-1/2) ) / 2
-#endif
-
-#ifdef _FIXEDINDEX_
-  real(DP), public              :: GMTR_P_var   (ADM_gall   ,ADM_KNONE,ADM_lall   ,              GMTR_P_nmax_var   )
-  real(DP), public              :: GMTR_P_var_pl(ADM_gall_pl,ADM_KNONE,ADM_lall_pl,              GMTR_P_nmax_var   )
-  real(DP), public              :: GMTR_T_var   (ADM_gall   ,ADM_KNONE,ADM_lall   ,ADM_TI:ADM_TJ,GMTR_T_nmax_var   )
-  real(DP), public              :: GMTR_T_var_pl(ADM_gall_pl,ADM_KNONE,ADM_lall_pl,              GMTR_T_nmax_var   )
-  real(DP), public              :: GMTR_A_var   (ADM_gall   ,ADM_KNONE,ADM_lall   ,ADM_AI:ADM_AJ,GMTR_A_nmax_var   )
-  real(DP), public              :: GMTR_A_var_pl(ADM_gall_pl,ADM_KNONE,ADM_lall_pl,              GMTR_A_nmax_var_pl)
-
-  real(DP), public              :: GMTR_area    (ADM_gall   ,ADM_lall   )
-  real(DP), public              :: GMTR_area_pl (ADM_gall_pl,ADM_lall_pl)
-  real(DP), public              :: GMTR_lat     (ADM_gall   ,ADM_lall   )
-  real(DP), public              :: GMTR_lat_pl  (ADM_gall_pl,ADM_lall_pl)
-  real(DP), public              :: GMTR_lon     (ADM_gall   ,ADM_lall   )
-  real(DP), public              :: GMTR_lon_pl  (ADM_gall_pl,ADM_lall_pl)
-#else
-  real(DP), public, allocatable :: GMTR_P_var   (:,:,:,:)   ! geometrics for the cell point
-  real(DP), public, allocatable :: GMTR_P_var_pl(:,:,:,:)
-  real(DP), public, allocatable :: GMTR_T_var   (:,:,:,:,:) ! geometrics for the cell vertex
-  real(DP), public, allocatable :: GMTR_T_var_pl(:,:,:,:)
-  real(DP), public, allocatable :: GMTR_A_var   (:,:,:,:,:) ! geometrics for the cell arc
-  real(DP), public, allocatable :: GMTR_A_var_pl(:,:,:,:)
-
-  real(DP), public, allocatable :: GMTR_area    (:,:)       ! control area of the cell
-  real(DP), public, allocatable :: GMTR_area_pl (:,:)
-  real(DP), public, allocatable :: GMTR_lat     (:,:)       ! latitude  of the cell point
-  real(DP), public, allocatable :: GMTR_lat_pl  (:,:)
-  real(DP), public, allocatable :: GMTR_lon     (:,:)       ! longitude of the cell point
-  real(DP), public, allocatable :: GMTR_lon_pl  (:,:)
 #endif
 
   !-----------------------------------------------------------------------------
@@ -243,8 +205,84 @@ contains
 
     return
   end subroutine DEBUG_rapreport
+
   !-----------------------------------------------------------------------------
-  !> make extention with process number
+  subroutine DEBUG_valuecheck_1D( &
+       varname, &
+       var      )
+    implicit none
+
+    character(len=*),  intent(in)  :: varname
+    real(RP),          intent(in)  :: var(:)
+    !---------------------------------------------------------------------------
+
+     EX_item = trim  (varname)
+     EX_max  = maxval(var)
+     EX_min  = minval(var)
+     EX_sum  = sum   (var)
+     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+
+    return
+  end subroutine DEBUG_valuecheck_1D
+
+  !-----------------------------------------------------------------------------
+  subroutine DEBUG_valuecheck_2D( &
+       varname, &
+       var      )
+    implicit none
+
+    character(len=*),  intent(in)  :: varname
+    real(RP),          intent(in)  :: var(:,:)
+    !---------------------------------------------------------------------------
+
+     EX_item = trim  (varname)
+     EX_max  = maxval(var)
+     EX_min  = minval(var)
+     EX_sum  = sum   (var)
+     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+
+    return
+  end subroutine DEBUG_valuecheck_2D
+
+  !-----------------------------------------------------------------------------
+  subroutine DEBUG_valuecheck_3D( &
+       varname, &
+       var      )
+    implicit none
+
+    character(len=*),  intent(in)  :: varname
+    real(RP),          intent(in)  :: var(:,:,:)
+    !---------------------------------------------------------------------------
+
+     EX_item = trim  (varname)
+     EX_max  = maxval(var)
+     EX_min  = minval(var)
+     EX_sum  = sum   (var)
+     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+
+    return
+  end subroutine DEBUG_valuecheck_3D
+
+  !-----------------------------------------------------------------------------
+  subroutine DEBUG_valuecheck_4D( &
+       varname, &
+       var      )
+    implicit none
+
+    character(len=*),  intent(in)  :: varname
+    real(RP),          intent(in)  :: var(:,:,:,:)
+    !---------------------------------------------------------------------------
+
+     EX_item = trim  (varname)
+     EX_max  = maxval(var)
+     EX_min  = minval(var)
+     EX_sum  = sum   (var)
+     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+
+    return
+  end subroutine DEBUG_valuecheck_4D
+
+  !-----------------------------------------------------------------------------
   subroutine MISC_make_idstr( &
        str,    &
        prefix, &

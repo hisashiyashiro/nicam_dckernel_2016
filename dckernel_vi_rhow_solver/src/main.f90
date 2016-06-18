@@ -173,7 +173,7 @@ program dckernel_vi_rhow_solver
      read(EX_fid) VMTR_GSGAM2H_pl (:,:,:)
   close(EX_fid)
 
-  call GRD_setup ! allocate GRD_rdgz
+  call GRD_setup ! allocate GRD_rdgz, GRD_afac, GRD_bfac
 
   !---< operator module setup >---
   call vi_rhow_solver_putcoef( Mc           (:,:,:), Mc_pl           (:,:,:), & ! [IN]
@@ -215,137 +215,41 @@ program dckernel_vi_rhow_solver
 
 
      write(ADM_LOG_FID,*) '### Input ###'
-     EX_item =       'rhogw_prev   '
-     EX_max  = maxval(rhogw_prev   (:,:,:))
-     EX_min  = minval(rhogw_prev   (:,:,:))
-     EX_sum  = sum   (rhogw_prev   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw_prev_pl'
-     EX_max  = maxval(rhogw_prev_pl(:,:,:))
-     EX_min  = minval(rhogw_prev_pl(:,:,:))
-     EX_sum  = sum   (rhogw_prev_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_rhogw'
-     EX_max  = maxval(check_rhogw(:,:,:))
-     EX_min  = minval(check_rhogw(:,:,:))
-     EX_sum  = sum   (check_rhogw(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_rhogw_pl'
-     EX_max  = maxval(check_rhogw_pl(:,:,:))
-     EX_min  = minval(check_rhogw_pl(:,:,:))
-     EX_sum  = sum   (check_rhogw_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw0   '
-     EX_max  = maxval(rhogw0   (:,:,:))
-     EX_min  = minval(rhogw0   (:,:,:))
-     EX_sum  = sum   (rhogw0   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw0_pl'
-     EX_max  = maxval(rhogw0_pl(:,:,:))
-     EX_min  = minval(rhogw0_pl(:,:,:))
-     EX_sum  = sum   (rhogw0_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'preg0    '
-     EX_max  = maxval(preg0    (:,:,:))
-     EX_min  = minval(preg0    (:,:,:))
-     EX_sum  = sum   (preg0    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'preg0_pl '
-     EX_max  = maxval(preg0_pl (:,:,:))
-     EX_min  = minval(preg0_pl (:,:,:))
-     EX_sum  = sum   (preg0_pl (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Srho     '
-     EX_max  = maxval(Srho     (:,:,:))
-     EX_min  = minval(Srho     (:,:,:))
-     EX_sum  = sum   (Srho     (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Srho_pl  '
-     EX_max  = maxval(Srho_pl  (:,:,:))
-     EX_min  = minval(Srho_pl  (:,:,:))
-     EX_sum  = sum   (Srho_pl  (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Sw       '
-     EX_max  = maxval(Sw       (:,:,:))
-     EX_min  = minval(Sw       (:,:,:))
-     EX_sum  = sum   (Sw       (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Sw_pl    '
-     EX_max  = maxval(Sw_pl    (:,:,:))
-     EX_min  = minval(Sw_pl    (:,:,:))
-     EX_sum  = sum   (Sw_pl    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Spre     '
-     EX_max  = maxval(Spre     (:,:,:))
-     EX_min  = minval(Spre     (:,:,:))
-     EX_sum  = sum   (Spre     (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Spre_pl  '
-     EX_max  = maxval(Spre_pl  (:,:,:))
-     EX_min  = minval(Spre_pl  (:,:,:))
-     EX_sum  = sum   (Spre_pl  (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Mc       '
-     EX_max  = maxval(Mc       (:,:,:))
-     EX_min  = minval(Mc       (:,:,:))
-     EX_sum  = sum   (Mc       (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Mc_pl    '
-     EX_max  = maxval(Mc_pl    (:,:,:))
-     EX_min  = minval(Mc_pl    (:,:,:))
-     EX_sum  = sum   (Mc_pl    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Ml       '
-     EX_max  = maxval(Ml       (:,:,:))
-     EX_min  = minval(Ml       (:,:,:))
-     EX_sum  = sum   (Ml       (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Ml_pl    '
-     EX_max  = maxval(Ml_pl    (:,:,:))
-     EX_min  = minval(Ml_pl    (:,:,:))
-     EX_sum  = sum   (Ml_pl    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Mu       '
-     EX_max  = maxval(Mu       (:,:,:))
-     EX_min  = minval(Mu       (:,:,:))
-     EX_sum  = sum   (Mu       (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'Mu_pl    '
-     EX_max  = maxval(Mu_pl    (:,:,:))
-     EX_min  = minval(Mu_pl    (:,:,:))
-     EX_sum  = sum   (Mu_pl    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-
+     call DEBUG_valuecheck( 'rhogw_prev    ', rhogw_prev    (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw_prev_pl ', rhogw_prev_pl (:,:,:) )
+     call DEBUG_valuecheck( 'check_rhogw   ', check_rhogw   (:,:,:) )
+     call DEBUG_valuecheck( 'check_rhogw_pl', check_rhogw_pl(:,:,:) )
+     call DEBUG_valuecheck( 'rhogw0        ', rhogw0        (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw0_pl     ', rhogw0_pl     (:,:,:) )
+     call DEBUG_valuecheck( 'preg0         ', preg0         (:,:,:) )
+     call DEBUG_valuecheck( 'preg0_pl      ', preg0_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'Srho          ', Srho          (:,:,:) )
+     call DEBUG_valuecheck( 'Srho_pl       ', Srho_pl       (:,:,:) )
+     call DEBUG_valuecheck( 'Sw            ', Sw            (:,:,:) )
+     call DEBUG_valuecheck( 'Sw_pl         ', Sw_pl         (:,:,:) )
+     call DEBUG_valuecheck( 'Spre          ', Spre          (:,:,:) )
+     call DEBUG_valuecheck( 'Spre_pl       ', Spre_pl       (:,:,:) )
+     call DEBUG_valuecheck( 'Mc            ', Mc            (:,:,:) )
+     call DEBUG_valuecheck( 'Mc_pl         ', Mc_pl         (:,:,:) )
+     call DEBUG_valuecheck( 'Ml            ', Ml            (:,:,:) )
+     call DEBUG_valuecheck( 'Ml_pl         ', Ml_pl         (:,:,:) )
+     call DEBUG_valuecheck( 'Mu            ', Mu            (:,:,:) )
+     call DEBUG_valuecheck( 'Mu_pl         ', Mu_pl         (:,:,:) )
      write(ADM_LOG_FID,*) '### Output ###'
-     EX_item =       'rhogw    '
-     EX_max  = maxval(rhogw    (:,:,:))
-     EX_min  = minval(rhogw    (:,:,:))
-     EX_sum  = sum   (rhogw    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw_pl '
-     EX_max  = maxval(rhogw_pl (:,:,:))
-     EX_min  = minval(rhogw_pl (:,:,:))
-     EX_sum  = sum   (rhogw_pl (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'rhogw         ', rhogw         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw_pl      ', rhogw_pl      (:,:,:) )
   enddo
 
   write(ADM_LOG_FID,*) '### Varidation : grid-by-grid diff ###'
   check_rhogw   (:,:,:) = check_rhogw   (:,:,:) - rhogw   (:,:,:)
   check_rhogw_pl(:,:,:) = check_rhogw_pl(:,:,:) - rhogw_pl(:,:,:)
-
-  EX_item =       'check_rhogw'
-  EX_max  = maxval(check_rhogw(:,:,:))
-  EX_min  = minval(check_rhogw(:,:,:))
-  EX_sum  = sum   (check_rhogw(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_rhogw_pl'
-  EX_max  = maxval(check_rhogw_pl(:,:,:))
-  EX_min  = minval(check_rhogw_pl(:,:,:))
-  EX_sum  = sum   (check_rhogw_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+  call DEBUG_valuecheck( 'check_rhogw   ', check_rhogw   (:,:,:) )
+  call DEBUG_valuecheck( 'check_rhogw_pl', check_rhogw_pl(:,:,:) )
 
   call DEBUG_rapend('DC_vi_rhow_solver_kernel')
   write(*,*) "*** Finish kernel"
+
+  !###############################################################################
 
   call DEBUG_rapreport
 

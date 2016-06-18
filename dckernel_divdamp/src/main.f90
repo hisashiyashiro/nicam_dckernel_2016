@@ -222,108 +222,28 @@ program dckernel_divdamp
 
 
      write(ADM_LOG_FID,*) '### Input ###'
-     EX_item =       'check_ddivdx   '
-     EX_max  = maxval(check_ddivdx   (:,:,:))
-     EX_min  = minval(check_ddivdx   (:,:,:))
-     EX_sum  = sum   (check_ddivdx   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdx_pl'
-     EX_max  = maxval(check_ddivdx_pl(:,:,:))
-     EX_min  = minval(check_ddivdx_pl(:,:,:))
-     EX_sum  = sum   (check_ddivdx_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdy   '
-     EX_max  = maxval(check_ddivdy   (:,:,:))
-     EX_min  = minval(check_ddivdy   (:,:,:))
-     EX_sum  = sum   (check_ddivdy   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdy_pl'
-     EX_max  = maxval(check_ddivdy_pl(:,:,:))
-     EX_min  = minval(check_ddivdy_pl(:,:,:))
-     EX_sum  = sum   (check_ddivdy_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdz   '
-     EX_max  = maxval(check_ddivdz   (:,:,:))
-     EX_min  = minval(check_ddivdz   (:,:,:))
-     EX_sum  = sum   (check_ddivdz   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdz_pl'
-     EX_max  = maxval(check_ddivdz_pl(:,:,:))
-     EX_min  = minval(check_ddivdz_pl(:,:,:))
-     EX_sum  = sum   (check_ddivdz_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvx         '
-     EX_max  = maxval(rhogvx         (:,:,:))
-     EX_min  = minval(rhogvx         (:,:,:))
-     EX_sum  = sum   (rhogvx         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvx_pl      '
-     EX_max  = maxval(rhogvx_pl      (:,:,:))
-     EX_min  = minval(rhogvx_pl      (:,:,:))
-     EX_sum  = sum   (rhogvx_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvy         '
-     EX_max  = maxval(rhogvy         (:,:,:))
-     EX_min  = minval(rhogvy         (:,:,:))
-     EX_sum  = sum   (rhogvy         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvy_pl      '
-     EX_max  = maxval(rhogvy_pl      (:,:,:))
-     EX_min  = minval(rhogvy_pl      (:,:,:))
-     EX_sum  = sum   (rhogvy_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvz         '
-     EX_max  = maxval(rhogvz         (:,:,:))
-     EX_min  = minval(rhogvz         (:,:,:))
-     EX_sum  = sum   (rhogvz         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvz_pl      '
-     EX_max  = maxval(rhogvz_pl      (:,:,:))
-     EX_min  = minval(rhogvz_pl      (:,:,:))
-     EX_sum  = sum   (rhogvz_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw          '
-     EX_max  = maxval(rhogw          (:,:,:))
-     EX_min  = minval(rhogw          (:,:,:))
-     EX_sum  = sum   (rhogw          (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw_pl       '
-     EX_max  = maxval(rhogw_pl       (:,:,:))
-     EX_min  = minval(rhogw_pl       (:,:,:))
-     EX_sum  = sum   (rhogw_pl       (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'check_ddivdx   ', check_ddivdx   (:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdx_pl', check_ddivdx_pl(:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdy   ', check_ddivdy   (:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdy_pl', check_ddivdy_pl(:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdz   ', check_ddivdz   (:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdz_pl', check_ddivdz_pl(:,:,:) )
+     call DEBUG_valuecheck( 'rhogvx         ', rhogvx         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvx_pl      ', rhogvx_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvy         ', rhogvy         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvy_pl      ', rhogvy_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvz         ', rhogvz         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvz_pl      ', rhogvz_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw          ', rhogw          (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw_pl       ', rhogw_pl       (:,:,:) )
 
      write(ADM_LOG_FID,*) '### Output ###'
-     EX_item =       'ddivdx         '
-     EX_max  = maxval(ddivdx         (:,:,:))
-     EX_min  = minval(ddivdx         (:,:,:))
-     EX_sum  = sum   (ddivdx         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdx_pl      '
-     EX_max  = maxval(ddivdx_pl      (:,:,:))
-     EX_min  = minval(ddivdx_pl      (:,:,:))
-     EX_sum  = sum   (ddivdx_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdy         '
-     EX_max  = maxval(ddivdy         (:,:,:))
-     EX_min  = minval(ddivdy         (:,:,:))
-     EX_sum  = sum   (ddivdy         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdy_pl      '
-     EX_max  = maxval(ddivdy_pl      (:,:,:))
-     EX_min  = minval(ddivdy_pl      (:,:,:))
-     EX_sum  = sum   (ddivdy_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdz         '
-     EX_max  = maxval(ddivdz         (:,:,:))
-     EX_min  = minval(ddivdz         (:,:,:))
-     EX_sum  = sum   (ddivdz         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdz_pl      '
-     EX_max  = maxval(ddivdz_pl      (:,:,:))
-     EX_min  = minval(ddivdz_pl      (:,:,:))
-     EX_sum  = sum   (ddivdz_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'ddivdx         ', ddivdx         (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdx_pl      ', ddivdx_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdy         ', ddivdy         (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdy_pl      ', ddivdy_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdz         ', ddivdz         (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdz_pl      ', ddivdz_pl      (:,:,:) )
   enddo
 
   write(ADM_LOG_FID,*) '### Varidation : grid-by-grid diff ###'
@@ -333,40 +253,17 @@ program dckernel_divdamp
   check_ddivdy_pl(:,:,:) = check_ddivdy_pl(:,:,:) - ddivdy_pl(:,:,:)
   check_ddivdz   (:,:,:) = check_ddivdz   (:,:,:) - ddivdz   (:,:,:)
   check_ddivdz_pl(:,:,:) = check_ddivdz_pl(:,:,:) - ddivdz_pl(:,:,:)
-
-  EX_item =       'check_ddivdx   '
-  EX_max  = maxval(check_ddivdx   (:,:,:))
-  EX_min  = minval(check_ddivdx   (:,:,:))
-  EX_sum  = sum   (check_ddivdx   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdx_pl'
-  EX_max  = maxval(check_ddivdx_pl(:,:,:))
-  EX_min  = minval(check_ddivdx_pl(:,:,:))
-  EX_sum  = sum   (check_ddivdx_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdy   '
-  EX_max  = maxval(check_ddivdy   (:,:,:))
-  EX_min  = minval(check_ddivdy   (:,:,:))
-  EX_sum  = sum   (check_ddivdy   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdy_pl'
-  EX_max  = maxval(check_ddivdy_pl(:,:,:))
-  EX_min  = minval(check_ddivdy_pl(:,:,:))
-  EX_sum  = sum   (check_ddivdy_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdz   '
-  EX_max  = maxval(check_ddivdz   (:,:,:))
-  EX_min  = minval(check_ddivdz   (:,:,:))
-  EX_sum  = sum   (check_ddivdz   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdz_pl'
-  EX_max  = maxval(check_ddivdz_pl(:,:,:))
-  EX_min  = minval(check_ddivdz_pl(:,:,:))
-  EX_sum  = sum   (check_ddivdz_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+  call DEBUG_valuecheck( 'check_ddivdx   ', check_ddivdx   (:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdx_pl', check_ddivdx_pl(:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdy   ', check_ddivdy   (:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdy_pl', check_ddivdy_pl(:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdz   ', check_ddivdz   (:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdz_pl', check_ddivdz_pl(:,:,:) )
 
   call DEBUG_rapend('DC_divdamp_kernel')
   write(*,*) "*** Finish kernel"
+
+  !###############################################################################
 
   call DEBUG_rapreport
 

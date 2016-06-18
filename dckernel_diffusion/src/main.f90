@@ -132,67 +132,27 @@ program dckernel_diffusion
 
 
      write(ADM_LOG_FID,*) '### Input ###'
-     EX_item =       'check_dscl   '
-     EX_max  = maxval(check_dscl   (:,:,:))
-     EX_min  = minval(check_dscl   (:,:,:))
-     EX_sum  = sum   (check_dscl   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_dscl_pl'
-     EX_max  = maxval(check_dscl_pl(:,:,:))
-     EX_min  = minval(check_dscl_pl(:,:,:))
-     EX_sum  = sum   (check_dscl_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'scl    '
-     EX_max  = maxval(scl    (:,:,:))
-     EX_min  = minval(scl    (:,:,:))
-     EX_sum  = sum   (scl    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'scl_pl '
-     EX_max  = maxval(scl_pl (:,:,:))
-     EX_min  = minval(scl_pl (:,:,:))
-     EX_sum  = sum   (scl_pl (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'kh     '
-     EX_max  = maxval(kh     (:,:,:))
-     EX_min  = minval(kh     (:,:,:))
-     EX_sum  = sum   (kh     (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'kh_pl  '
-     EX_max  = maxval(kh_pl  (:,:,:))
-     EX_min  = minval(kh_pl  (:,:,:))
-     EX_sum  = sum   (kh_pl  (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-
+     call DEBUG_valuecheck( 'check_dscl   ', check_dscl   (:,:,:) )
+     call DEBUG_valuecheck( 'check_dscl_pl', check_dscl_pl(:,:,:) )
+     call DEBUG_valuecheck( 'scl          ', scl          (:,:,:) )
+     call DEBUG_valuecheck( 'scl_pl       ', scl_pl       (:,:,:) )
+     call DEBUG_valuecheck( 'kh           ', kh           (:,:,:) )
+     call DEBUG_valuecheck( 'kh_pl        ', kh_pl        (:,:,:) )
      write(ADM_LOG_FID,*) '### Output ###'
-     EX_item =       'dscl   '
-     EX_max  = maxval(dscl   (:,:,:))
-     EX_min  = minval(dscl   (:,:,:))
-     EX_sum  = sum   (dscl   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'dscl_pl'
-     EX_max  = maxval(dscl_pl(:,:,:))
-     EX_min  = minval(dscl_pl(:,:,:))
-     EX_sum  = sum   (dscl_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'dscl         ', dscl         (:,:,:) )
+     call DEBUG_valuecheck( 'dscl_pl      ', dscl_pl      (:,:,:) )
   enddo
 
   write(ADM_LOG_FID,*) '### Varidation by diff ###'
   check_dscl   (:,:,:) = check_dscl   (:,:,:) - dscl   (:,:,:)
   check_dscl_pl(:,:,:) = check_dscl_pl(:,:,:) - dscl_pl(:,:,:)
-
-  EX_item    =       'check_dscl   '
-  EX_max = maxval(check_dscl   (:,:,:))
-  EX_min = minval(check_dscl   (:,:,:))
-  EX_sum = sum   (check_dscl   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item    =       'check_dscl_pl'
-  EX_max = maxval(check_dscl_pl(:,:,:))
-  EX_min = minval(check_dscl_pl(:,:,:))
-  EX_sum = sum   (check_dscl_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+  call DEBUG_valuecheck( 'check_dscl   ', check_dscl   (:,:,:) )
+  call DEBUG_valuecheck( 'check_dscl_pl', check_dscl_pl(:,:,:) )
 
   call DEBUG_rapend('DC_diffusion_kernel')
   write(*,*) "*** Finish kernel"
+
+  !###############################################################################
 
   call DEBUG_rapreport
 

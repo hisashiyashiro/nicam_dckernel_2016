@@ -52,40 +52,19 @@
   real(RP), public            :: CVdry =   717.5_RP   ! Specific heat of air (consant volume)
   integer,  public            :: NON_HYDRO_ALPHA = 1 ! Nonhydrostatic/hydrostatic flag
 
-
   !--- mod_grd
-  integer,  public, parameter :: GRD_XDIR = 1
-  integer,  public, parameter :: GRD_YDIR = 2
-  integer,  public, parameter :: GRD_ZDIR = 3
+  integer,  public, parameter :: XDIR = 1
+  integer,  public, parameter :: YDIR = 2
+  integer,  public, parameter :: ZDIR = 3
 
   character(len=ADM_MAXFNAME), public :: vgrid_fname ='./vgrid40_600m_24km.dat'
 
   !--- mod_gmtr
-  integer,  public, parameter :: GMTR_P_nmax_var = 10
-
   integer,  public, parameter :: P_AREA  = 1
   integer,  public, parameter :: P_RAREA = 2
-  integer,  public, parameter :: GMTR_P_IX    = 3
-  integer,  public, parameter :: GMTR_P_IY    = 4
-  integer,  public, parameter :: GMTR_P_IZ    = 5
-  integer,  public, parameter :: GMTR_P_JX    = 6
-  integer,  public, parameter :: GMTR_P_JY    = 7
-  integer,  public, parameter :: GMTR_P_JZ    = 8
-  integer,  public, parameter :: GMTR_P_LAT   = 9
-  integer,  public, parameter :: GMTR_P_LON   = 10
-
-  integer,  public, parameter :: GMTR_T_nmax_var = 7
 
   integer,  public, parameter :: T_AREA  = 1
   integer,  public, parameter :: T_RAREA = 2
-  integer,  public, parameter :: W1    = 3
-  integer,  public, parameter :: W2    = 4
-  integer,  public, parameter :: W3    = 5
-  integer,  public, parameter :: GMTR_T_LAT   = 6
-  integer,  public, parameter :: GMTR_T_LON   = 7
-
-  integer,  public, parameter :: GMTR_A_nmax_var    = 12
-  integer,  public, parameter :: GMTR_A_nmax_var_pl = 18
 
   integer,  public, parameter :: HNX  = 1
   integer,  public, parameter :: HNY  = 2
@@ -109,4 +88,4 @@
 
   integer,  public :: SET_iteration = 1
   integer,  public :: SET_prc_me    = 1
-  real(RP), public :: SET_dt        = 60.D0
+  real(DP), public :: SET_dt        = 60.0_DP
