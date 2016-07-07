@@ -1,0 +1,35 @@
+#
+# ------ FOR Linux 64bit & intel fortran&C&mpi on Mistral -----
+#
+
+FFLAGS_FAST  = -fpp -m64 -O3 -xHost -qopenmp        \
+               -assume byterecl -convert big_endian \
+               -fp-model source                     \
+               -mcmodel=medium -heap-arrays
+
+FFLAGS_DEBUG = -fpp -m64 -O0 -qopenmp                \
+               -assume byterecl -convert big_endian  \
+               -fpe0 -fp-model source                \
+               -check bounds -warn all -g -traceback \
+               -mcmodel=medium -heap-arrays
+
+FC     = skin --mpp=none --thread=omp mpiifort
+FFLAGS = $(FFLAGS_FAST)
+#FFLAGS = $(FFLAGS_DEBUG)
+
+CC     = skin mpiicc
+CFLAGS = -O3 -xHost -ip -mcmodel=medium
+
+###########################
+
+MODDIROPT ?= -module $(BUILDDIR)
+OBJDIR    ?= $(BUILDDIR)
+
+LD     = $(FC)
+LFLAGS = $(FFLAGS)
+
+MAKE    = make
+INSTALL = cp -u
+AR      = ar
+ARFLAGS = r
+RANLIB  = ranlib

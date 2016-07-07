@@ -23,6 +23,7 @@ PRJ = dckernel_divdamp.exe
 PRG = main
 
 MODS = \
+	dumpio.o \
 	mod_precision.o \
 	mod_misc.o      \
 	mod_oprt3d.o
@@ -35,11 +36,12 @@ makebin: makedir $(PRJ)
 
 
 
+dumpio.o        : dumpio.c
 mod_precision.o : mod_precision.f90
 mod_misc.o      : mod_misc.f90 problem_size.inc mod_precision.o
 mod_oprt3d.o    : mod_oprt3d.f90 mod_misc.o mod_precision.o
 
-main.o : main.f90 mod_precision.o mod_misc.o mod_oprt3d.o
+main.o : main.f90 mod_precision.o dumpio.o mod_misc.o mod_oprt3d.o
 
 $(BUILDDIR)/$(PRJ) : $(PRG).o $(BUILDDIR)/$(MODS)
 	$(LD) $(LFLAGS) -o $@ $^
@@ -56,13 +58,16 @@ clean:
 	rm -f *~ *.mod *.o *.lst *.L
 	cd $(BUILDDIR); rm -f $(PRJ); rm -f *~ *.mod *.o *.lst *.L
 
-.SUFFIXES: .o .f90
-.f90.o:
+.SUFFIXES: .o .f90 .c .mod
+%.o : %.f90
 	$(FC) $(FFLAGS) $(MODDIROPT) -o $(OBJDIR)/$@ -c $<
+
+%.o : %.c
+	$(CC) $(CFLAGS) -o $(OBJDIR)/$@ -c $<
 
 %.o: %.mod
 
-$(BUILDDIR)/%.mod: %.f90
-	$(make) $(patsubst %.f90,$(BUILDDIR)/%.o,$<)
+%.mod: %.f90
+	$(make) $(patsubst %.f90,%.o,$<)
 
 .PHONY : clean cleandir allclean

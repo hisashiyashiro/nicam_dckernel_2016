@@ -16,13 +16,27 @@ program dckernel_diffusion
   !-----------------------------------------------------------------------------
   implicit none
 
-  real(RP), allocatable :: dscl   (:,:,:)
-  real(RP), allocatable :: dscl_pl(:,:,:)
-  real(RP), allocatable :: scl    (:,:,:)
-  real(RP), allocatable :: scl_pl (:,:,:)
-  real(RP), allocatable :: kh     (:,:,:)
-  real(RP), allocatable :: kh_pl  (:,:,:)
+  real(DP), allocatable :: ORG_dscl          (:,:,:)
+  real(DP), allocatable :: ORG_dscl_pl       (:,:,:)
+  real(DP), allocatable :: ORG_scl           (:,:,:)
+  real(DP), allocatable :: ORG_scl_pl        (:,:,:)
+  real(DP), allocatable :: ORG_kh            (:,:,:)
+  real(DP), allocatable :: ORG_kh_pl         (:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TN    (:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TN_pl (:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_HN    (:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_HN_pl (:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TRA   (:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TRA_pl(:,:)
+  real(DP), allocatable :: ORG_cinterp_PRA   (:,:)
+  real(DP), allocatable :: ORG_cinterp_PRA_pl(:,:)
 
+  real(RP), allocatable :: dscl          (:,:,:)
+  real(RP), allocatable :: dscl_pl       (:,:,:)
+  real(RP), allocatable :: scl           (:,:,:)
+  real(RP), allocatable :: scl_pl        (:,:,:)
+  real(RP), allocatable :: kh            (:,:,:)
+  real(RP), allocatable :: kh_pl         (:,:,:)
   real(RP), allocatable :: cinterp_TN    (:,:,:,:)
   real(RP), allocatable :: cinterp_TN_pl (:,:,:,:)
   real(RP), allocatable :: cinterp_HN    (:,:,:,:)
@@ -44,13 +58,12 @@ program dckernel_diffusion
 
   write(*,*) "*** Start  initialize"
 
-  allocate( dscl          (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( dscl_pl       (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( scl           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( scl_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( kh            (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( kh_pl         (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-
+  allocate( dscl          (ADM_gall   ,ADM_kall,ADM_lall   )       )
+  allocate( dscl_pl       (ADM_gall_pl,ADM_kall,ADM_lall_pl)       )
+  allocate( scl           (ADM_gall   ,ADM_kall,ADM_lall   )       )
+  allocate( scl_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)       )
+  allocate( kh            (ADM_gall   ,ADM_kall,ADM_lall   )       )
+  allocate( kh_pl         (ADM_gall_pl,ADM_kall,ADM_lall_pl)       )
   allocate( cinterp_TN    (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
   allocate( cinterp_TN_pl (ADM_gall_pl,ADM_lall_pl,2    ,ADM_nxyz) )
   allocate( cinterp_HN    (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
@@ -66,7 +79,6 @@ program dckernel_diffusion
   scl_pl        (:,:,:)   = 0.0_RP
   kh            (:,:,:)   = 0.0_RP
   kh_pl         (:,:,:)   = 0.0_RP
-
   cinterp_TN    (:,:,:,:) = 0.0_RP
   cinterp_TN_pl (:,:,:,:) = 0.0_RP
   cinterp_HN    (:,:,:,:) = 0.0_RP
@@ -81,29 +93,76 @@ program dckernel_diffusion
   check_dscl    (:,:,:)   = 0.0_RP
   check_dscl_pl (:,:,:)   = 0.0_RP
 
-  call MISC_make_idstr(EX_fname,'snapshot.dc_diffusion','pe',SET_prc_me)
-  EX_fid = MISC_get_available_fid()
-  open( unit   = EX_fid,         &
-        file   = trim(EX_fname), &
-        form   = 'unformatted',  &
-        access = 'sequential',   &
-        status = 'old'           )
+  !###############################################################################
 
-     read(EX_fid) dscl          (:,:,:)
-     read(EX_fid) dscl_pl       (:,:,:)
-     read(EX_fid) scl           (:,:,:)
-     read(EX_fid) scl_pl        (:,:,:)
-     read(EX_fid) kh            (:,:,:)
-     read(EX_fid) kh_pl         (:,:,:)
-     read(EX_fid) cinterp_TN    (:,:,:,:)
-     read(EX_fid) cinterp_TN_pl (:,:,:,:)
-     read(EX_fid) cinterp_HN    (:,:,:,:)
-     read(EX_fid) cinterp_HN_pl (:,:,  :)
-     read(EX_fid) cinterp_TRA   (:,:,:  )
-     read(EX_fid) cinterp_TRA_pl(:,:    )
-     read(EX_fid) cinterp_PRA   (:,:    )
-     read(EX_fid) cinterp_PRA_pl(:,:    )
-  close(EX_fid)
+  !---< read input data >---
+  allocate( ORG_dscl          (ADM_gall   ,ADM_kall,ADM_lall   )       )
+  allocate( ORG_dscl_pl       (ADM_gall_pl,ADM_kall,ADM_lall_pl)       )
+  allocate( ORG_scl           (ADM_gall   ,ADM_kall,ADM_lall   )       )
+  allocate( ORG_scl_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)       )
+  allocate( ORG_kh            (ADM_gall   ,ADM_kall,ADM_lall   )       )
+  allocate( ORG_kh_pl         (ADM_gall_pl,ADM_kall,ADM_lall_pl)       )
+  allocate( ORG_cinterp_TN    (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
+  allocate( ORG_cinterp_TN_pl (ADM_gall_pl,ADM_lall_pl,2    ,ADM_nxyz) )
+  allocate( ORG_cinterp_HN    (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
+  allocate( ORG_cinterp_HN_pl (ADM_gall_pl,ADM_lall_pl,      ADM_nxyz) )
+  allocate( ORG_cinterp_TRA   (ADM_gall   ,ADM_lall   ,TI:TJ         ) )
+  allocate( ORG_cinterp_TRA_pl(ADM_gall_pl,ADM_lall_pl               ) )
+  allocate( ORG_cinterp_PRA   (ADM_gall   ,ADM_lall                  ) )
+  allocate( ORG_cinterp_PRA_pl(ADM_gall_pl,ADM_lall_pl               ) )
+
+  call dumpio_syscheck
+  call dumpio_mk_fname(EX_fname,'snapshot.dc_diffusion','pe',SET_prc_me-1,6)
+  call dumpio_fopen(EX_fid,EX_fname,IO_FREAD)
+
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_dscl   (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_dscl_pl(:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_scl    (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_scl_pl (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_kh     (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_kh_pl  (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *3*3, ORG_cinterp_TN    (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl*2*3, ORG_cinterp_TN_pl (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *3*3, ORG_cinterp_HN    (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl*3  , ORG_cinterp_HN_pl (:,:,  :) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *2  , ORG_cinterp_TRA   (:,:,:  ) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl    , ORG_cinterp_TRA_pl(:,:    ) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall       , ORG_cinterp_PRA   (:,:    ) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl    , ORG_cinterp_PRA_pl(:,:    ) )
+
+  call dumpio_fclose(EX_fid)
+
+  dscl          (:,:,:)   = real( ORG_dscl          (:,:,:)  , kind=RP )
+  dscl_pl       (:,:,:)   = real( ORG_dscl_pl       (:,:,:)  , kind=RP )
+  scl           (:,:,:)   = real( ORG_scl           (:,:,:)  , kind=RP )
+  scl_pl        (:,:,:)   = real( ORG_scl_pl        (:,:,:)  , kind=RP )
+  kh            (:,:,:)   = real( ORG_kh            (:,:,:)  , kind=RP )
+  kh_pl         (:,:,:)   = real( ORG_kh_pl         (:,:,:)  , kind=RP )
+  cinterp_TN    (:,:,:,:) = real( ORG_cinterp_TN    (:,:,:,:), kind=RP )
+  cinterp_TN_pl (:,:,:,:) = real( ORG_cinterp_TN_pl (:,:,:,:), kind=RP )
+  cinterp_HN    (:,:,:,:) = real( ORG_cinterp_HN    (:,:,:,:), kind=RP )
+  cinterp_HN_pl (:,:,  :) = real( ORG_cinterp_HN_pl (:,:,  :), kind=RP )
+  cinterp_TRA   (:,:,:  ) = real( ORG_cinterp_TRA   (:,:,:  ), kind=RP )
+  cinterp_TRA_pl(:,:    ) = real( ORG_cinterp_TRA_pl(:,:    ), kind=RP )
+  cinterp_PRA   (:,:    ) = real( ORG_cinterp_PRA   (:,:    ), kind=RP )
+  cinterp_PRA_pl(:,:    ) = real( ORG_cinterp_PRA_pl(:,:    ), kind=RP )
+
+  deallocate( ORG_dscl           )
+  deallocate( ORG_dscl_pl        )
+  deallocate( ORG_scl            )
+  deallocate( ORG_scl_pl         )
+  deallocate( ORG_kh             )
+  deallocate( ORG_kh_pl          )
+  deallocate( ORG_cinterp_TN     )
+  deallocate( ORG_cinterp_TN_pl  )
+  deallocate( ORG_cinterp_HN     )
+  deallocate( ORG_cinterp_HN_pl  )
+  deallocate( ORG_cinterp_TRA    )
+  deallocate( ORG_cinterp_TRA_pl )
+  deallocate( ORG_cinterp_PRA    )
+  deallocate( ORG_cinterp_PRA_pl )
+
+  !###############################################################################
 
   !---< operator module setup >---
   call OPRT_diffusion_putcoef( cinterp_TN , cinterp_TN_pl , & ![IN]
@@ -132,67 +191,27 @@ program dckernel_diffusion
 
 
      write(ADM_LOG_FID,*) '### Input ###'
-     EX_item =       'check_dscl   '
-     EX_max  = maxval(check_dscl   (:,:,:))
-     EX_min  = minval(check_dscl   (:,:,:))
-     EX_sum  = sum   (check_dscl   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_dscl_pl'
-     EX_max  = maxval(check_dscl_pl(:,:,:))
-     EX_min  = minval(check_dscl_pl(:,:,:))
-     EX_sum  = sum   (check_dscl_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'scl    '
-     EX_max  = maxval(scl    (:,:,:))
-     EX_min  = minval(scl    (:,:,:))
-     EX_sum  = sum   (scl    (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'scl_pl '
-     EX_max  = maxval(scl_pl (:,:,:))
-     EX_min  = minval(scl_pl (:,:,:))
-     EX_sum  = sum   (scl_pl (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'kh     '
-     EX_max  = maxval(kh     (:,:,:))
-     EX_min  = minval(kh     (:,:,:))
-     EX_sum  = sum   (kh     (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'kh_pl  '
-     EX_max  = maxval(kh_pl  (:,:,:))
-     EX_min  = minval(kh_pl  (:,:,:))
-     EX_sum  = sum   (kh_pl  (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-
+     call DEBUG_valuecheck( 'check_dscl   ', check_dscl   (:,:,:) )
+     call DEBUG_valuecheck( 'check_dscl_pl', check_dscl_pl(:,:,:) )
+     call DEBUG_valuecheck( 'scl          ', scl          (:,:,:) )
+     call DEBUG_valuecheck( 'scl_pl       ', scl_pl       (:,:,:) )
+     call DEBUG_valuecheck( 'kh           ', kh           (:,:,:) )
+     call DEBUG_valuecheck( 'kh_pl        ', kh_pl        (:,:,:) )
      write(ADM_LOG_FID,*) '### Output ###'
-     EX_item =       'dscl   '
-     EX_max  = maxval(dscl   (:,:,:))
-     EX_min  = minval(dscl   (:,:,:))
-     EX_sum  = sum   (dscl   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'dscl_pl'
-     EX_max  = maxval(dscl_pl(:,:,:))
-     EX_min  = minval(dscl_pl(:,:,:))
-     EX_sum  = sum   (dscl_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'dscl         ', dscl         (:,:,:) )
+     call DEBUG_valuecheck( 'dscl_pl      ', dscl_pl      (:,:,:) )
   enddo
 
   write(ADM_LOG_FID,*) '### Varidation by diff ###'
   check_dscl   (:,:,:) = check_dscl   (:,:,:) - dscl   (:,:,:)
   check_dscl_pl(:,:,:) = check_dscl_pl(:,:,:) - dscl_pl(:,:,:)
-
-  EX_item    =       'check_dscl   '
-  EX_max = maxval(check_dscl   (:,:,:))
-  EX_min = minval(check_dscl   (:,:,:))
-  EX_sum = sum   (check_dscl   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item    =       'check_dscl_pl'
-  EX_max = maxval(check_dscl_pl(:,:,:))
-  EX_min = minval(check_dscl_pl(:,:,:))
-  EX_sum = sum   (check_dscl_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+  call DEBUG_valuecheck( 'check_dscl   ', check_dscl   (:,:,:) )
+  call DEBUG_valuecheck( 'check_dscl_pl', check_dscl_pl(:,:,:) )
 
   call DEBUG_rapend('DC_diffusion_kernel')
   write(*,*) "*** Finish kernel"
+
+  !###############################################################################
 
   call DEBUG_rapreport
 

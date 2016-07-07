@@ -228,7 +228,7 @@ contains
     real(RP), intent(in)    :: Sw_pl    (ADM_gall_pl,ADM_kall,ADM_lall_pl)
     real(RP), intent(in)    :: Sp       (ADM_gall   ,ADM_kall,ADM_lall   ) ! source term for pres at the full level
     real(RP), intent(in)    :: Sp_pl    (ADM_gall_pl,ADM_kall,ADM_lall_pl)
-    real(RP), intent(in)    :: dt
+    real(DP), intent(in)    :: dt
 
     real(RP) :: Sall    (ADM_gall,   ADM_kall)
     real(RP) :: Sall_pl (ADM_gall_pl,ADM_kall)

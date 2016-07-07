@@ -16,6 +16,37 @@ program dckernel_divdamp
   !-----------------------------------------------------------------------------
   implicit none
 
+  real(DP), allocatable :: ORG_ddivdx           (:,:,:)
+  real(DP), allocatable :: ORG_ddivdx_pl        (:,:,:)
+  real(DP), allocatable :: ORG_ddivdy           (:,:,:)
+  real(DP), allocatable :: ORG_ddivdy_pl        (:,:,:)
+  real(DP), allocatable :: ORG_ddivdz           (:,:,:)
+  real(DP), allocatable :: ORG_ddivdz_pl        (:,:,:)
+  real(DP), allocatable :: ORG_rhogvx           (:,:,:)
+  real(DP), allocatable :: ORG_rhogvx_pl        (:,:,:)
+  real(DP), allocatable :: ORG_rhogvy           (:,:,:)
+  real(DP), allocatable :: ORG_rhogvy_pl        (:,:,:)
+  real(DP), allocatable :: ORG_rhogvz           (:,:,:)
+  real(DP), allocatable :: ORG_rhogvz_pl        (:,:,:)
+  real(DP), allocatable :: ORG_rhogw            (:,:,:)
+  real(DP), allocatable :: ORG_rhogw_pl         (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_RGAM        (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_RGAM_pl     (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_RGAMH       (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_RGAMH_pl    (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_RGSQRTH     (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_RGSQRTH_pl  (:,:,:)
+  real(DP), allocatable :: ORG_VMTR_C2WfactGz   (:,:,:,:)
+  real(DP), allocatable :: ORG_VMTR_C2WfactGz_pl(:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TN       (:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TN_pl    (:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_HN       (:,:,:,:)
+  real(DP), allocatable :: ORG_cinterp_HN_pl    (:,:  ,:)
+  real(DP), allocatable :: ORG_cinterp_TRA      (:,:,:)
+  real(DP), allocatable :: ORG_cinterp_TRA_pl   (:,:)
+  real(DP), allocatable :: ORG_cinterp_PRA      (:,:)
+  real(DP), allocatable :: ORG_cinterp_PRA_pl   (:,:)
+
   real(RP), allocatable :: ddivdx           (:,:,:)
   real(RP), allocatable :: ddivdx_pl        (:,:,:)
   real(RP), allocatable :: ddivdy           (:,:,:)
@@ -30,7 +61,6 @@ program dckernel_divdamp
   real(RP), allocatable :: rhogvz_pl        (:,:,:)
   real(RP), allocatable :: rhogw            (:,:,:)
   real(RP), allocatable :: rhogw_pl         (:,:,:)
-
   real(RP), allocatable :: VMTR_RGAM        (:,:,:)
   real(RP), allocatable :: VMTR_RGAM_pl     (:,:,:)
   real(RP), allocatable :: VMTR_RGAMH       (:,:,:)
@@ -64,27 +94,26 @@ program dckernel_divdamp
 
   write(*,*) "*** Start  initialize"
 
-  allocate( ddivdx           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( ddivdx_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( ddivdy           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( ddivdy_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( ddivdz           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( ddivdz_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( rhogvx           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( rhogvx_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( rhogvy           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( rhogvy_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( rhogvz           (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( rhogvz_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( rhogw            (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( rhogw_pl         (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-
-  allocate( VMTR_RGAM        (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( VMTR_RGAM_pl     (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( VMTR_RGAMH       (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( VMTR_RGAMH_pl    (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
-  allocate( VMTR_RGSQRTH     (ADM_gall   ,ADM_kall,ADM_lall   ) )
-  allocate( VMTR_RGSQRTH_pl  (ADM_gall_pl,ADM_kall,ADM_lall_pl) )
+  allocate( ddivdx           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ddivdx_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ddivdy           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ddivdy_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ddivdz           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ddivdz_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( rhogvx           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( rhogvx_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( rhogvy           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( rhogvy_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( rhogvz           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( rhogvz_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( rhogw            (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( rhogw_pl         (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( VMTR_RGAM        (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( VMTR_RGAM_pl     (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( VMTR_RGAMH       (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( VMTR_RGAMH_pl    (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( VMTR_RGSQRTH     (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( VMTR_RGSQRTH_pl  (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
   allocate( VMTR_C2WfactGz   (ADM_gall   ,ADM_kall,6,ADM_lall   ) )
   allocate( VMTR_C2WfactGz_pl(ADM_gall_pl,ADM_kall,6,ADM_lall_pl) )
   allocate( cinterp_TN       (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
@@ -110,7 +139,6 @@ program dckernel_divdamp
   rhogvz_pl        (:,:,:)   = 0.0_RP
   rhogw            (:,:,:)   = 0.0_RP
   rhogw_pl         (:,:,:)   = 0.0_RP
-
   VMTR_RGAM        (:,:,:)   = 0.0_RP
   VMTR_RGAM_pl     (:,:,:)   = 0.0_RP
   VMTR_RGAMH       (:,:,:)   = 0.0_RP
@@ -141,45 +169,140 @@ program dckernel_divdamp
   check_ddivdz     (:,:,:)   = 0.0_RP
   check_ddivdz_pl  (:,:,:)   = 0.0_RP
 
-  call MISC_make_idstr(EX_fname,'snapshot.dc_divdamp3d','pe',SET_prc_me)
-  EX_fid = MISC_get_available_fid()
-  open( unit   = EX_fid,         &
-        file   = trim(EX_fname), &
-        form   = 'unformatted',  &
-        access = 'sequential',   &
-        status = 'old'           )
+  !###############################################################################
 
-     read(EX_fid) ddivdx           (:,:,:)
-     read(EX_fid) ddivdx_pl        (:,:,:)
-     read(EX_fid) ddivdy           (:,:,:)
-     read(EX_fid) ddivdy_pl        (:,:,:)
-     read(EX_fid) ddivdz           (:,:,:)
-     read(EX_fid) ddivdz_pl        (:,:,:)
-     read(EX_fid) rhogvx           (:,:,:)
-     read(EX_fid) rhogvx_pl        (:,:,:)
-     read(EX_fid) rhogvy           (:,:,:)
-     read(EX_fid) rhogvy_pl        (:,:,:)
-     read(EX_fid) rhogvz           (:,:,:)
-     read(EX_fid) rhogvz_pl        (:,:,:)
-     read(EX_fid) rhogw            (:,:,:)
-     read(EX_fid) rhogw_pl         (:,:,:)
-     read(EX_fid) VMTR_RGAM        (:,:,:)
-     read(EX_fid) VMTR_RGAM_pl     (:,:,:)
-     read(EX_fid) VMTR_RGAMH       (:,:,:)
-     read(EX_fid) VMTR_RGAMH_pl    (:,:,:)
-     read(EX_fid) VMTR_RGSQRTH     (:,:,:)
-     read(EX_fid) VMTR_RGSQRTH_pl  (:,:,:)
-     read(EX_fid) VMTR_C2WfactGz   (:,:,:,:)
-     read(EX_fid) VMTR_C2WfactGz_pl(:,:,:,:)
-     read(EX_fid) cinterp_TN       (:,:,:,:)
-     read(EX_fid) cinterp_TN_pl    (:,:,:,:)
-     read(EX_fid) cinterp_HN       (:,:,:,:)
-     read(EX_fid) cinterp_HN_pl    (:,:  ,:)
-     read(EX_fid) cinterp_TRA      (:,:,:  )
-     read(EX_fid) cinterp_TRA_pl   (:,:    )
-     read(EX_fid) cinterp_PRA      (:,:    )
-     read(EX_fid) cinterp_PRA_pl   (:,:    )
-  close(EX_fid)
+  !---< read input data >---
+  allocate( ORG_ddivdx           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_ddivdx_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_ddivdy           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_ddivdy_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_ddivdz           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_ddivdz_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_rhogvx           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_rhogvx_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_rhogvy           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_rhogvy_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_rhogvz           (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_rhogvz_pl        (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_rhogw            (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_rhogw_pl         (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_VMTR_RGAM        (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_VMTR_RGAM_pl     (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_VMTR_RGAMH       (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_VMTR_RGAMH_pl    (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_VMTR_RGSQRTH     (ADM_gall   ,ADM_kall,ADM_lall   )   )
+  allocate( ORG_VMTR_RGSQRTH_pl  (ADM_gall_pl,ADM_kall,ADM_lall_pl)   )
+  allocate( ORG_VMTR_C2WfactGz   (ADM_gall   ,ADM_kall,6,ADM_lall   ) )
+  allocate( ORG_VMTR_C2WfactGz_pl(ADM_gall_pl,ADM_kall,6,ADM_lall_pl) )
+  allocate( ORG_cinterp_TN       (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
+  allocate( ORG_cinterp_TN_pl    (ADM_gall_pl,ADM_lall_pl,2    ,ADM_nxyz) )
+  allocate( ORG_cinterp_HN       (ADM_gall   ,ADM_lall   ,AI:AJ,ADM_nxyz) )
+  allocate( ORG_cinterp_HN_pl    (ADM_gall_pl,ADM_lall_pl,      ADM_nxyz) )
+  allocate( ORG_cinterp_TRA      (ADM_gall   ,ADM_lall   ,TI:TJ         ) )
+  allocate( ORG_cinterp_TRA_pl   (ADM_gall_pl,ADM_lall_pl               ) )
+  allocate( ORG_cinterp_PRA      (ADM_gall   ,ADM_lall                  ) )
+  allocate( ORG_cinterp_PRA_pl   (ADM_gall_pl,ADM_lall_pl               ) )
+
+  call dumpio_syscheck
+  call dumpio_mk_fname(EX_fname,'snapshot.dc_divdamp3d','pe',SET_prc_me-1,6)
+  call dumpio_fopen(EX_fid,EX_fname,IO_FREAD)
+
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_ddivdx         (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_ddivdx_pl      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_ddivdy         (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_ddivdy_pl      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_ddivdz         (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_ddivdz_pl      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_rhogvx         (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_rhogvx_pl      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_rhogvy         (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_rhogvy_pl      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_rhogvz         (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_rhogvz_pl      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_rhogw          (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_rhogw_pl       (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_VMTR_RGAM      (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_VMTR_RGAM_pl   (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_VMTR_RGAMH     (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_VMTR_RGAMH_pl  (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_VMTR_RGSQRTH   (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_VMTR_RGSQRTH_pl(:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*6*ADM_lall   , ORG_VMTR_C2WfactGz   (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*6*ADM_lall_pl, ORG_VMTR_C2WfactGz_pl(:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *3*3, ORG_cinterp_TN    (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl*2*3, ORG_cinterp_TN_pl (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *3*3, ORG_cinterp_HN    (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl*3  , ORG_cinterp_HN_pl (:,:,  :) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *2  , ORG_cinterp_TRA   (:,:,:  ) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl    , ORG_cinterp_TRA_pl(:,:    ) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall       , ORG_cinterp_PRA   (:,:    ) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl    , ORG_cinterp_PRA_pl(:,:    ) )
+
+  call dumpio_fclose(EX_fid)
+
+  ddivdx           (:,:,:)   = real( ORG_ddivdx           (:,:,:)  , kind=RP )
+  ddivdx_pl        (:,:,:)   = real( ORG_ddivdx_pl        (:,:,:)  , kind=RP )
+  ddivdy           (:,:,:)   = real( ORG_ddivdy           (:,:,:)  , kind=RP )
+  ddivdy_pl        (:,:,:)   = real( ORG_ddivdy_pl        (:,:,:)  , kind=RP )
+  ddivdz           (:,:,:)   = real( ORG_ddivdz           (:,:,:)  , kind=RP )
+  ddivdz_pl        (:,:,:)   = real( ORG_ddivdz_pl        (:,:,:)  , kind=RP )
+  rhogvx           (:,:,:)   = real( ORG_rhogvx           (:,:,:)  , kind=RP )
+  rhogvx_pl        (:,:,:)   = real( ORG_rhogvx_pl        (:,:,:)  , kind=RP )
+  rhogvy           (:,:,:)   = real( ORG_rhogvy           (:,:,:)  , kind=RP )
+  rhogvy_pl        (:,:,:)   = real( ORG_rhogvy_pl        (:,:,:)  , kind=RP )
+  rhogvz           (:,:,:)   = real( ORG_rhogvz           (:,:,:)  , kind=RP )
+  rhogvz_pl        (:,:,:)   = real( ORG_rhogvz_pl        (:,:,:)  , kind=RP )
+  rhogw            (:,:,:)   = real( ORG_rhogw            (:,:,:)  , kind=RP )
+  rhogw_pl         (:,:,:)   = real( ORG_rhogw_pl         (:,:,:)  , kind=RP )
+  VMTR_RGAM        (:,:,:)   = real( ORG_VMTR_RGAM        (:,:,:)  , kind=RP )
+  VMTR_RGAM_pl     (:,:,:)   = real( ORG_VMTR_RGAM_pl     (:,:,:)  , kind=RP )
+  VMTR_RGAMH       (:,:,:)   = real( ORG_VMTR_RGAMH       (:,:,:)  , kind=RP )
+  VMTR_RGAMH_pl    (:,:,:)   = real( ORG_VMTR_RGAMH_pl    (:,:,:)  , kind=RP )
+  VMTR_RGSQRTH     (:,:,:)   = real( ORG_VMTR_RGSQRTH     (:,:,:)  , kind=RP )
+  VMTR_RGSQRTH_pl  (:,:,:)   = real( ORG_VMTR_RGSQRTH_pl  (:,:,:)  , kind=RP )
+  VMTR_C2WfactGz   (:,:,:,:) = real( ORG_VMTR_C2WfactGz   (:,:,:,:), kind=RP )
+  VMTR_C2WfactGz_pl(:,:,:,:) = real( ORG_VMTR_C2WfactGz_pl(:,:,:,:), kind=RP )
+  cinterp_TN       (:,:,:,:) = real( ORG_cinterp_TN       (:,:,:,:), kind=RP )
+  cinterp_TN_pl    (:,:,:,:) = real( ORG_cinterp_TN_pl    (:,:,:,:), kind=RP )
+  cinterp_HN       (:,:,:,:) = real( ORG_cinterp_HN       (:,:,:,:), kind=RP )
+  cinterp_HN_pl    (:,:  ,:) = real( ORG_cinterp_HN_pl    (:,:  ,:), kind=RP )
+  cinterp_TRA      (:,:,:  ) = real( ORG_cinterp_TRA      (:,:,:  ), kind=RP )
+  cinterp_TRA_pl   (:,:    ) = real( ORG_cinterp_TRA_pl   (:,:    ), kind=RP )
+  cinterp_PRA      (:,:    ) = real( ORG_cinterp_PRA      (:,:    ), kind=RP )
+  cinterp_PRA_pl   (:,:    ) = real( ORG_cinterp_PRA_pl   (:,:    ), kind=RP )
+
+  deallocate( ORG_ddivdx            )
+  deallocate( ORG_ddivdx_pl         )
+  deallocate( ORG_ddivdy            )
+  deallocate( ORG_ddivdy_pl         )
+  deallocate( ORG_ddivdz            )
+  deallocate( ORG_ddivdz_pl         )
+  deallocate( ORG_rhogvx            )
+  deallocate( ORG_rhogvx_pl         )
+  deallocate( ORG_rhogvy            )
+  deallocate( ORG_rhogvy_pl         )
+  deallocate( ORG_rhogvz            )
+  deallocate( ORG_rhogvz_pl         )
+  deallocate( ORG_rhogw             )
+  deallocate( ORG_rhogw_pl          )
+  deallocate( ORG_VMTR_RGAM         )
+  deallocate( ORG_VMTR_RGAM_pl      )
+  deallocate( ORG_VMTR_RGAMH        )
+  deallocate( ORG_VMTR_RGAMH_pl     )
+  deallocate( ORG_VMTR_RGSQRTH      )
+  deallocate( ORG_VMTR_RGSQRTH_pl   )
+  deallocate( ORG_VMTR_C2WfactGz    )
+  deallocate( ORG_VMTR_C2WfactGz_pl )
+  deallocate( ORG_cinterp_TN        )
+  deallocate( ORG_cinterp_TN_pl     )
+  deallocate( ORG_cinterp_HN        )
+  deallocate( ORG_cinterp_HN_pl     )
+  deallocate( ORG_cinterp_TRA       )
+  deallocate( ORG_cinterp_TRA_pl    )
+  deallocate( ORG_cinterp_PRA       )
+  deallocate( ORG_cinterp_PRA_pl    )
+
+  !###############################################################################
 
   call GRD_setup ! allocate GRD_rdgz
 
@@ -222,108 +345,28 @@ program dckernel_divdamp
 
 
      write(ADM_LOG_FID,*) '### Input ###'
-     EX_item =       'check_ddivdx   '
-     EX_max  = maxval(check_ddivdx   (:,:,:))
-     EX_min  = minval(check_ddivdx   (:,:,:))
-     EX_sum  = sum   (check_ddivdx   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdx_pl'
-     EX_max  = maxval(check_ddivdx_pl(:,:,:))
-     EX_min  = minval(check_ddivdx_pl(:,:,:))
-     EX_sum  = sum   (check_ddivdx_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdy   '
-     EX_max  = maxval(check_ddivdy   (:,:,:))
-     EX_min  = minval(check_ddivdy   (:,:,:))
-     EX_sum  = sum   (check_ddivdy   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdy_pl'
-     EX_max  = maxval(check_ddivdy_pl(:,:,:))
-     EX_min  = minval(check_ddivdy_pl(:,:,:))
-     EX_sum  = sum   (check_ddivdy_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdz   '
-     EX_max  = maxval(check_ddivdz   (:,:,:))
-     EX_min  = minval(check_ddivdz   (:,:,:))
-     EX_sum  = sum   (check_ddivdz   (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'check_ddivdz_pl'
-     EX_max  = maxval(check_ddivdz_pl(:,:,:))
-     EX_min  = minval(check_ddivdz_pl(:,:,:))
-     EX_sum  = sum   (check_ddivdz_pl(:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvx         '
-     EX_max  = maxval(rhogvx         (:,:,:))
-     EX_min  = minval(rhogvx         (:,:,:))
-     EX_sum  = sum   (rhogvx         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvx_pl      '
-     EX_max  = maxval(rhogvx_pl      (:,:,:))
-     EX_min  = minval(rhogvx_pl      (:,:,:))
-     EX_sum  = sum   (rhogvx_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvy         '
-     EX_max  = maxval(rhogvy         (:,:,:))
-     EX_min  = minval(rhogvy         (:,:,:))
-     EX_sum  = sum   (rhogvy         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvy_pl      '
-     EX_max  = maxval(rhogvy_pl      (:,:,:))
-     EX_min  = minval(rhogvy_pl      (:,:,:))
-     EX_sum  = sum   (rhogvy_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvz         '
-     EX_max  = maxval(rhogvz         (:,:,:))
-     EX_min  = minval(rhogvz         (:,:,:))
-     EX_sum  = sum   (rhogvz         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogvz_pl      '
-     EX_max  = maxval(rhogvz_pl      (:,:,:))
-     EX_min  = minval(rhogvz_pl      (:,:,:))
-     EX_sum  = sum   (rhogvz_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw          '
-     EX_max  = maxval(rhogw          (:,:,:))
-     EX_min  = minval(rhogw          (:,:,:))
-     EX_sum  = sum   (rhogw          (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'rhogw_pl       '
-     EX_max  = maxval(rhogw_pl       (:,:,:))
-     EX_min  = minval(rhogw_pl       (:,:,:))
-     EX_sum  = sum   (rhogw_pl       (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'check_ddivdx   ', check_ddivdx   (:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdx_pl', check_ddivdx_pl(:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdy   ', check_ddivdy   (:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdy_pl', check_ddivdy_pl(:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdz   ', check_ddivdz   (:,:,:) )
+     call DEBUG_valuecheck( 'check_ddivdz_pl', check_ddivdz_pl(:,:,:) )
+     call DEBUG_valuecheck( 'rhogvx         ', rhogvx         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvx_pl      ', rhogvx_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvy         ', rhogvy         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvy_pl      ', rhogvy_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvz         ', rhogvz         (:,:,:) )
+     call DEBUG_valuecheck( 'rhogvz_pl      ', rhogvz_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw          ', rhogw          (:,:,:) )
+     call DEBUG_valuecheck( 'rhogw_pl       ', rhogw_pl       (:,:,:) )
 
      write(ADM_LOG_FID,*) '### Output ###'
-     EX_item =       'ddivdx         '
-     EX_max  = maxval(ddivdx         (:,:,:))
-     EX_min  = minval(ddivdx         (:,:,:))
-     EX_sum  = sum   (ddivdx         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdx_pl      '
-     EX_max  = maxval(ddivdx_pl      (:,:,:))
-     EX_min  = minval(ddivdx_pl      (:,:,:))
-     EX_sum  = sum   (ddivdx_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdy         '
-     EX_max  = maxval(ddivdy         (:,:,:))
-     EX_min  = minval(ddivdy         (:,:,:))
-     EX_sum  = sum   (ddivdy         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdy_pl      '
-     EX_max  = maxval(ddivdy_pl      (:,:,:))
-     EX_min  = minval(ddivdy_pl      (:,:,:))
-     EX_sum  = sum   (ddivdy_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdz         '
-     EX_max  = maxval(ddivdz         (:,:,:))
-     EX_min  = minval(ddivdz         (:,:,:))
-     EX_sum  = sum   (ddivdz         (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-     EX_item =       'ddivdz_pl      '
-     EX_max  = maxval(ddivdz_pl      (:,:,:))
-     EX_min  = minval(ddivdz_pl      (:,:,:))
-     EX_sum  = sum   (ddivdz_pl      (:,:,:))
-     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+     call DEBUG_valuecheck( 'ddivdx         ', ddivdx         (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdx_pl      ', ddivdx_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdy         ', ddivdy         (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdy_pl      ', ddivdy_pl      (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdz         ', ddivdz         (:,:,:) )
+     call DEBUG_valuecheck( 'ddivdz_pl      ', ddivdz_pl      (:,:,:) )
   enddo
 
   write(ADM_LOG_FID,*) '### Varidation : grid-by-grid diff ###'
@@ -333,40 +376,17 @@ program dckernel_divdamp
   check_ddivdy_pl(:,:,:) = check_ddivdy_pl(:,:,:) - ddivdy_pl(:,:,:)
   check_ddivdz   (:,:,:) = check_ddivdz   (:,:,:) - ddivdz   (:,:,:)
   check_ddivdz_pl(:,:,:) = check_ddivdz_pl(:,:,:) - ddivdz_pl(:,:,:)
-
-  EX_item =       'check_ddivdx   '
-  EX_max  = maxval(check_ddivdx   (:,:,:))
-  EX_min  = minval(check_ddivdx   (:,:,:))
-  EX_sum  = sum   (check_ddivdx   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdx_pl'
-  EX_max  = maxval(check_ddivdx_pl(:,:,:))
-  EX_min  = minval(check_ddivdx_pl(:,:,:))
-  EX_sum  = sum   (check_ddivdx_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdy   '
-  EX_max  = maxval(check_ddivdy   (:,:,:))
-  EX_min  = minval(check_ddivdy   (:,:,:))
-  EX_sum  = sum   (check_ddivdy   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdy_pl'
-  EX_max  = maxval(check_ddivdy_pl(:,:,:))
-  EX_min  = minval(check_ddivdy_pl(:,:,:))
-  EX_sum  = sum   (check_ddivdy_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdz   '
-  EX_max  = maxval(check_ddivdz   (:,:,:))
-  EX_min  = minval(check_ddivdz   (:,:,:))
-  EX_sum  = sum   (check_ddivdz   (:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
-  EX_item =       'check_ddivdz_pl'
-  EX_max  = maxval(check_ddivdz_pl(:,:,:))
-  EX_min  = minval(check_ddivdz_pl(:,:,:))
-  EX_sum  = sum   (check_ddivdz_pl(:,:,:))
-  write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+  call DEBUG_valuecheck( 'check_ddivdx   ', check_ddivdx   (:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdx_pl', check_ddivdx_pl(:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdy   ', check_ddivdy   (:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdy_pl', check_ddivdy_pl(:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdz   ', check_ddivdz   (:,:,:) )
+  call DEBUG_valuecheck( 'check_ddivdz_pl', check_ddivdz_pl(:,:,:) )
 
   call DEBUG_rapend('DC_divdamp_kernel')
   write(*,*) "*** Finish kernel"
+
+  !###############################################################################
 
   call DEBUG_rapreport
 

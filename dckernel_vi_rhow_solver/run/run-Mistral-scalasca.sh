@@ -1,18 +1,16 @@
 #! /bin/bash -x
 #
-# for K computer
+# for DKRZ Mistral
 #
-#PJM --rsc-list "rscgrp=micro"
-#PJM --rsc-list "node=1"
-#PJM --rsc-list "elapse=00:10:00"
-#PJM -j
-#PJM -s
-#
-. /work/system/Env_base
-#
-export PARALLEL=8
-export OMP_NUM_THREADS=8
-export XOS_MMM_L_ARENA_FREE=2
+#SBATCH --partition=compute
+#SBATCH --job-name=NICAMknl
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=00:10:00
+set -e
+
+export OMP_NUM_THREADS=4
+#export SCOREP_METRIC_PAPI=PAPI_FP_OPS
 
 HMDIR=`pwd`/../..
 
@@ -24,6 +22,6 @@ ln -svf ${HMDIR}/bin/dckernel_vi_rhow_solver.exe .
 ln -svf ${HMDIR}/dckernel_vi_rhow_solver/data/vgrid40_600m_24km.dat .
 ln -svf ${HMDIR}/dckernel_vi_rhow_solver/data/snapshot.dc_vi_rhow_solver.pe000000 .
 
-rm -rf ./prof*
+rm -rf ./epik_trace
 
-fapp -C -Ihwm -Hevent=Statistics -d prof -L 10 ./dckernel_vi_rhow_solver.exe
+scan -t -e epik_trace ./dckernel_vi_rhow_solver.exe
