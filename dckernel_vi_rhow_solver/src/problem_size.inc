@@ -8,6 +8,8 @@
   integer,  public, parameter :: ADM_MAXFNAME = 1024
   integer,  public            :: ADM_LOG_FID  = 6
 
+  integer,  public, parameter :: IO_FREAD = 0
+
   !--- Identifier of triangle element (i-axis-side or j-axis side)
   integer,  public, parameter :: TI  = 1
   integer,  public, parameter :: TJ  = 2

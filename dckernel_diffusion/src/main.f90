@@ -111,29 +111,26 @@ program dckernel_diffusion
   allocate( ORG_cinterp_PRA   (ADM_gall   ,ADM_lall                  ) )
   allocate( ORG_cinterp_PRA_pl(ADM_gall_pl,ADM_lall_pl               ) )
 
-  call MISC_make_idstr(EX_fname,'snapshot.dc_diffusion','pe',SET_prc_me)
-  EX_fid = MISC_get_available_fid()
-  open( unit   = EX_fid,         &
-        file   = trim(EX_fname), &
-        form   = 'unformatted',  &
-        access = 'sequential',   &
-        status = 'old'           )
+  call dumpio_syscheck
+  call dumpio_mk_fname(EX_fname,'snapshot.dc_diffusion','pe',SET_prc_me-1,6)
+  call dumpio_fopen(EX_fid,EX_fname,IO_FREAD)
 
-     read(EX_fid) ORG_dscl          (:,:,:)
-     read(EX_fid) ORG_dscl_pl       (:,:,:)
-     read(EX_fid) ORG_scl           (:,:,:)
-     read(EX_fid) ORG_scl_pl        (:,:,:)
-     read(EX_fid) ORG_kh            (:,:,:)
-     read(EX_fid) ORG_kh_pl         (:,:,:)
-     read(EX_fid) ORG_cinterp_TN    (:,:,:,:)
-     read(EX_fid) ORG_cinterp_TN_pl (:,:,:,:)
-     read(EX_fid) ORG_cinterp_HN    (:,:,:,:)
-     read(EX_fid) ORG_cinterp_HN_pl (:,:,  :)
-     read(EX_fid) ORG_cinterp_TRA   (:,:,:  )
-     read(EX_fid) ORG_cinterp_TRA_pl(:,:    )
-     read(EX_fid) ORG_cinterp_PRA   (:,:    )
-     read(EX_fid) ORG_cinterp_PRA_pl(:,:    )
-  close(EX_fid)
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_dscl   (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_dscl_pl(:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_scl    (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_scl_pl (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_kall*ADM_lall   , ORG_kh     (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_kall*ADM_lall_pl, ORG_kh_pl  (:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *3*3, ORG_cinterp_TN    (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl*2*3, ORG_cinterp_TN_pl (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *3*3, ORG_cinterp_HN    (:,:,:,:) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl*3  , ORG_cinterp_HN_pl (:,:,  :) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall   *2  , ORG_cinterp_TRA   (:,:,:  ) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl    , ORG_cinterp_TRA_pl(:,:    ) )
+  call dumpio_read_data( EX_fid, ADM_gall   *ADM_lall       , ORG_cinterp_PRA   (:,:    ) )
+  call dumpio_read_data( EX_fid, ADM_gall_pl*ADM_lall_pl    , ORG_cinterp_PRA_pl(:,:    ) )
+
+  call dumpio_fclose(EX_fid)
 
   dscl          (:,:,:)   = real( ORG_dscl          (:,:,:)  , kind=RP )
   dscl_pl       (:,:,:)   = real( ORG_dscl_pl       (:,:,:)  , kind=RP )
