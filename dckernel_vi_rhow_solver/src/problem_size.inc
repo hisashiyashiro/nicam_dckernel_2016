@@ -34,10 +34,18 @@
   integer,  public            :: ADM_gmin      = 2     ! start index of 1D horizontal grid
   integer,  public            :: ADM_gmax      = 129   ! end   index of 1D horizontal grid
 
+  integer,  public            :: ADM_iall      = 130
+  integer,  public            :: ADM_imin      = 2
+  integer,  public            :: ADM_imax      = 129
+  integer,  public            :: ADM_jall      = 130
+  integer,  public            :: ADM_jmin      = 2
+  integer,  public            :: ADM_jmax      = 129
+
   integer,  public            :: ADM_gall_pl   = 6     ! number of horizontal grid for pole region
   integer,  public, parameter :: ADM_gslf_pl   = 1     ! index for pole point
   integer,  public, parameter :: ADM_gmin_pl   = 2     ! start index of grid around the pole point
   integer,  public            :: ADM_gmax_pl   = 6     ! end   index of grid around the pole point
+  integer,  public, parameter :: ADM_vlink     = 5     ! number of grid around the pole point
 
   !--- vertical grid
   integer,  public            :: ADM_vlayer    = 40    ! number of vertical layer
@@ -49,6 +57,8 @@
   logical,  public            :: ADM_have_sgp(1) = .true. ! region have singlar point?
 
   !--- constant parameters
+  real(RP), public            :: PI    = 3.14159265358979_RP !< pi
+  real(RP), public            :: EPS   = 1.E-16_RP           !< small number
   real(RP), public            :: GRAV  = 9.80616_RP  ! Gravitational accerlaration of the Earth [m/s2]
   real(RP), public            :: Rdry  =   287.0_RP   ! Gas constant of air
   real(RP), public            :: CVdry =   717.5_RP   ! Specific heat of air (consant volume)
@@ -59,14 +69,38 @@
   integer,  public, parameter :: YDIR = 2
   integer,  public, parameter :: ZDIR = 3
 
-  character(len=ADM_MAXFNAME), public :: vgrid_fname ='./vgrid40_600m_24km.dat'
+  integer,  public, parameter :: GRD_LAT = 1
+  integer,  public, parameter :: GRD_LON = 2
+
+  real(RP), public            :: GRD_rscale = 6.37122E+6_RP !< radius of the planet [m]
+
+  character(len=ADM_NSYS),     public :: GRD_grid_type = 'ON_SPHERE'
+  character(len=ADM_MAXFNAME), public :: vgrid_fname   ='./vgrid40_600m_24km.dat'
 
   !--- mod_gmtr
+  character(len=ADM_NSYS),     public :: GMTR_polygon_type = 'ON_SPHERE'
+
+  integer,  public, parameter :: GMTR_p_nmax = 8
+
   integer,  public, parameter :: P_AREA  = 1
   integer,  public, parameter :: P_RAREA = 2
+  integer,  public, parameter :: P_IX    = 3
+  integer,  public, parameter :: P_IY    = 4
+  integer,  public, parameter :: P_IZ    = 5
+  integer,  public, parameter :: P_JX    = 6
+  integer,  public, parameter :: P_JY    = 7
+  integer,  public, parameter :: P_JZ    = 8
+
+  integer,  public, parameter :: GMTR_t_nmax = 5
 
   integer,  public, parameter :: T_AREA  = 1
   integer,  public, parameter :: T_RAREA = 2
+  integer,  public, parameter :: W1      = 3
+  integer,  public, parameter :: W2      = 4
+  integer,  public, parameter :: W3      = 5
+
+  integer,  public, parameter :: GMTR_a_nmax    = 12
+  integer,  public, parameter :: GMTR_a_nmax_pl = 18
 
   integer,  public, parameter :: HNX  = 1
   integer,  public, parameter :: HNY  = 2

@@ -28,6 +28,8 @@ module mod_misc
      module procedure DEBUG_valuecheck_2D
      module procedure DEBUG_valuecheck_3D
      module procedure DEBUG_valuecheck_4D
+     module procedure DEBUG_valuecheck_5D
+     module procedure DEBUG_valuecheck_6D
   end interface DEBUG_valuecheck
 
   public :: MISC_make_idstr        !--- make file name with a number
@@ -281,6 +283,44 @@ contains
 
     return
   end subroutine DEBUG_valuecheck_4D
+
+  !-----------------------------------------------------------------------------
+  subroutine DEBUG_valuecheck_5D( &
+       varname, &
+       var      )
+    implicit none
+
+    character(len=*),  intent(in)  :: varname
+    real(RP),          intent(in)  :: var(:,:,:,:,:)
+    !---------------------------------------------------------------------------
+
+     EX_item = trim  (varname)
+     EX_max  = maxval(var)
+     EX_min  = minval(var)
+     EX_sum  = sum   (var)
+     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+
+    return
+  end subroutine DEBUG_valuecheck_5D
+
+  !-----------------------------------------------------------------------------
+  subroutine DEBUG_valuecheck_6D( &
+       varname, &
+       var      )
+    implicit none
+
+    character(len=*),  intent(in)  :: varname
+    real(RP),          intent(in)  :: var(:,:,:,:,:,:)
+    !---------------------------------------------------------------------------
+
+     EX_item = trim  (varname)
+     EX_max  = maxval(var)
+     EX_min  = minval(var)
+     EX_sum  = sum   (var)
+     write(ADM_LOG_FID,'(1x,A,A16,3(A,ES24.16))') '+check[',EX_item,'] max=',EX_max,',min=',EX_min,',sum=',EX_sum
+
+    return
+  end subroutine DEBUG_valuecheck_6D
 
   !-----------------------------------------------------------------------------
   subroutine MISC_make_idstr( &
