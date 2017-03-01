@@ -7,8 +7,6 @@ FFLAGS_FAST  = -fpp3 -m64 -O3 -xHost                \
                -fp-model source                     \
                -mcmodel=medium -heap-arrays
 
-#              -openmp -openmp-report
-
 FFLAGS_DEBUG = -fpp3 -m64 -O0                        \
                -assume byterecl -convert big_endian  \
                -fpe0 -fp-model source                \
@@ -21,6 +19,12 @@ FFLAGS = $(FFLAGS_FAST)
 
 CC     = mpiicc
 CFLAGS = -O3 -xHost -ip -mcmodel=medium
+
+##### Special Options #####
+
+ifeq ($(ENABLE_OPENMP),T)
+	FFLAGS += -openmp -openmp-report
+endif
 
 ###########################
 
